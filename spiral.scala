@@ -25,6 +25,6 @@ object Spiral:
 
   def main(args: Array[String]) =
     val nSides = args(1).toInt
-    println(spiral(nSides, 0))
-    
+    println(spiral(nSides, 1))
+
 end Spiral
