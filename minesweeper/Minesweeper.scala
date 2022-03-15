@@ -43,7 +43,7 @@ class Minesweeper(
         val colIndex: Int = col - 'a'
         val rowIndex = height - row
         revealCoordinateAndConnectedZeros(colIndex, rowIndex)
-// flipping rows and columns somewhere
+
     def revealCoordinateAndConnectedZeros(colIndex: Int, rowIndex: Int): Minesweeper = 
         val mutableBoard = board.map(_.to(mutable.ArrayBuffer)).to(mutable.ArrayBuffer)
         setTileToRevealed(mutableBoard, colIndex, rowIndex)
