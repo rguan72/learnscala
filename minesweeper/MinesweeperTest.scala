@@ -2,6 +2,8 @@ import minesweeper.Minesweeper
 import minesweeper.Tile
 
 // learn how to use testing tools later
+
+// replace all tests with equivalent tests that only work on driver code? Board state => visual output?
 object MinesweeperTest:
     def main(args: Array[String]): Unit = 
         println("Test indexing")
