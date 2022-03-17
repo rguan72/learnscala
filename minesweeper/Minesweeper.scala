@@ -4,6 +4,7 @@
 package minesweeper
 
 import scala.collection.mutable
+import scala.util.Random
 
 object MinesweeperDriver:
     def main(args: Array[String]): Unit = 
@@ -17,6 +18,32 @@ class Minesweeper(
 ):
     def width: Int = board(0).size
     def height: Int = board.size
+    def this(height: Int, width: Int, numBombs: Int, random: Random) = 
+        this {
+            val emptyBoard = Vector.fill(height * width)(Tile('0', false))
+            val bombIndices = random.shuffle(0 until height * width).take(numBombs).toSet
+            val boardWithBombs = emptyBoard.zipWithIndex.map((tile, index) => bombIndices.contains(index) match {
+                case true => Tile('b', false)
+                case false => Tile('0', false)
+            })
+            val boardWithBombs2D = boardWithBombs.grouped(width).toVector
+            def getNeighborsInit(colIndex: Int, rowIndex: Int, height: Int, width: Int): Seq[(Int, Int)] = 
+                val shifts = List((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
+                for (colShift, rowShift) <- shifts if inBoundsInit(colIndex + colShift, rowIndex + rowShift, height, width) yield
+                    (colIndex + colShift, rowIndex + rowShift)
+            def inBoundsInit(colIndex: Int, rowIndex: Int, height: Int, width: Int): Boolean = 
+                colIndex >= 0 && colIndex < width && rowIndex >= 0 && rowIndex < height
+
+            boardWithBombs2D.zipWithIndex.map((row, rowIndex) => row.zipWithIndex.map((tile, colIndex) => {
+                val neighborBombs: Seq[Boolean] = for (neighborColIndex, neighborRowIndex) <- getNeighborsInit(colIndex, rowIndex, height, width) yield
+                    boardWithBombs2D(neighborRowIndex)(neighborColIndex).value == 'b'
+                val numNeighborBombs: Int = neighborBombs.count(_ == true)
+                tile.value match {
+                    case 'b' => Tile('b', false)
+                    case _ => { val str = numNeighborBombs.toString; Tile(str(0), false) }
+                }
+            }))
+        }
     override def toString: String = board.mkString("\n")
     def == (that: Minesweeper): Boolean = 
         this.board == that.board

@@ -1,5 +1,6 @@
 import minesweeper.Minesweeper
 import minesweeper.Tile
+import scala.util.Random
 
 // learn how to use testing tools later
 
@@ -132,8 +133,24 @@ object MinesweeperTest:
             Vector(Tile('b', true), Tile('2', false))
         )
         val expectedVisual2 = Vector("2| 2 b", "1| b *", "   ___", "   a b").mkString("\n")
-        println(expectedVisual2)
         assert(Minesweeper(visual2).visualBoard == expectedVisual2)
+
+        assert(Minesweeper(1, 1, 0, Random(1)) == Minesweeper(Vector(Vector(Tile('0', false)))))
+
+        val expectedSetup0 = Minesweeper(Vector(
+            Vector(Tile('1', false), Tile('1', false)),
+            Vector(Tile('b', false), Tile('2', false)),
+            Vector(Tile('b', false), Tile('2', false)),
+        ))
+        assert(Minesweeper(3, 2, 2, Random(1)) == expectedSetup0)
+
+        val expectedSetup1 = Minesweeper(Vector(
+            Vector(Tile('1',false), Tile('2',false), Tile('b',false), Tile('1',false), Tile('0',false)),
+            Vector(Tile('1',false), Tile('b',false), Tile('2',false), Tile('1',false), Tile('0',false)),
+            Vector(Tile('2',false), Tile('3',false), Tile('2',false), Tile('1',false), Tile('0',false)),
+            Vector(Tile('b',false), Tile('2',false), Tile('b',false), Tile('1',false), Tile('0',false)),
+        ))
+        assert(Minesweeper(4, 5, 4, Random(1)) == expectedSetup1)
 
         println("-----------------")
         println("ALL TESTS PASS")
