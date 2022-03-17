@@ -44,19 +44,36 @@ class Minesweeper(
         val rowIndex = height - row
         revealCoordinateAndConnectedZeros(colIndex, rowIndex)
 
+    def visualBoard: String = 
+        val boardWithoutBottomLabel = board.zipWithIndex.map((row, index) => {
+                val indexLabel = height - index
+                val tileLabels = row.map(tile => tile.revealed match {
+                    case true => tile.value.toString
+                    case false => "*"
+                })
+                s"$indexLabel| ${tileLabels.mkString(" ")}"
+            }
+        )
+        val lastChar = ('a' + width).toChar
+        val bottomLength = width * 2 - 1
+        val bottomDivider = s"   ${"_" * bottomLength}"
+        val bottomLabel = s"   ${('a' until lastChar).mkString(" ")}"
+        (boardWithoutBottomLabel :+ bottomDivider :+ bottomLabel).mkString("\n")
+
     def revealCoordinateAndConnectedZeros(colIndex: Int, rowIndex: Int): Minesweeper = 
-        val mutableBoard = board.map(_.to(mutable.ArrayBuffer)).to(mutable.ArrayBuffer)
+        val originalTile = board(rowIndex)(colIndex)
+        val mutableBoard = board.map(_.to(mutable.ArrayBuffer)).to(mutable.ArrayBuffer)        
         setTileToRevealed(mutableBoard, colIndex, rowIndex)
-        if mutableBoard(rowIndex)(colIndex).value == '0' then
-            val stack = mutable.Stack.empty[(Int, Int)]
+        val stack = mutable.Stack.empty[(Int, Int)]
+        if originalTile.value == '0' && !originalTile.revealed then
             stack.push((colIndex, rowIndex))
-            while !stack.isEmpty do
-                val (currColIndex, currRowIndex) = stack.pop()
-                for (neighborColIndex, neighborRowIndex) <- getNeighbors(currColIndex, currRowIndex) do
-                    if !mutableBoard(neighborRowIndex)(neighborColIndex).revealed then
-                        setTileToRevealed(mutableBoard, neighborColIndex, neighborRowIndex)
-                        if mutableBoard(neighborRowIndex)(neighborColIndex).value == '0' then
-                            stack.push((neighborColIndex, neighborRowIndex))
+        while !stack.isEmpty do
+            val (currColIndex, currRowIndex) = stack.pop()
+            for (neighborColIndex, neighborRowIndex) <- getNeighbors(currColIndex, currRowIndex) do
+                if !mutableBoard(neighborRowIndex)(neighborColIndex).revealed then
+                    setTileToRevealed(mutableBoard, neighborColIndex, neighborRowIndex)
+                    if mutableBoard(neighborRowIndex)(neighborColIndex).value == '0' then
+                        stack.push((neighborColIndex, neighborRowIndex))
         Minesweeper(mutableBoard.map(_.toVector).toVector)
 
     def setTileToRevealed(mutableBoard: mutable.ArrayBuffer[mutable.ArrayBuffer[Tile]], colIndex: Int, rowIndex: Int): Unit = 
