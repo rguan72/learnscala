@@ -5,13 +5,8 @@ package minesweeper
 
 import scala.collection.mutable
 import scala.util.Random
+import scala.io.StdIn.readLine
 
-object MinesweeperDriver:
-    def main(args: Array[String]): Unit = 
-        println("hello world")
-    def henlo: String = "henlo"
-end MinesweeperDriver
-// nice constructor for Minesweeper in Minesweeper driver
 
 class Minesweeper(
     val board: Vector[Vector[Tile]]
@@ -69,22 +64,28 @@ class Minesweeper(
     def action(col: Char, row: Int): Minesweeper = 
         val colIndex: Int = col - 'a'
         val rowIndex = height - row
-        revealCoordinateAndConnectedZeros(colIndex, rowIndex)
+        val newBoard = revealCoordinateAndConnectedZeros(colIndex, rowIndex)
+        if newBoard.isLost then 
+            newBoard.revealAllBombs()
+        else
+            newBoard
 
-    def visualBoard: String = 
+    def visualBoard: String =             
+        val maxLeftMargin = height.toString.length
         val boardWithoutBottomLabel = board.zipWithIndex.map((row, index) => {
                 val indexLabel = height - index
                 val tileLabels = row.map(tile => tile.revealed match {
                     case true => tile.value.toString
                     case false => "*"
                 })
-                s"$indexLabel| ${tileLabels.mkString(" ")}"
+                val leftMargin = maxLeftMargin - indexLabel.toString.length
+                s"${" " * leftMargin}$indexLabel| ${tileLabels.mkString(" ")}"
             }
         )
         val lastChar = ('a' + width).toChar
         val bottomLength = width * 2 - 1
-        val bottomDivider = s"   ${"_" * bottomLength}"
-        val bottomLabel = s"   ${('a' until lastChar).mkString(" ")}"
+        val bottomDivider = s"${" " * (maxLeftMargin + 2)}${"_" * bottomLength}"
+        val bottomLabel = s"${" " * (maxLeftMargin + 2)}${('a' until lastChar).mkString(" ")}"
         (boardWithoutBottomLabel :+ bottomDivider :+ bottomLabel).mkString("\n")
 
     def revealCoordinateAndConnectedZeros(colIndex: Int, rowIndex: Int): Minesweeper = 
@@ -102,6 +103,12 @@ class Minesweeper(
                     if mutableBoard(neighborRowIndex)(neighborColIndex).value == '0' then
                         stack.push((neighborColIndex, neighborRowIndex))
         Minesweeper(mutableBoard.map(_.toVector).toVector)
+
+    def revealAllBombs(): Minesweeper =
+        Minesweeper(board.map(row => row.map(tile => tile.value match { 
+            case 'b' => Tile(tile.value, true)
+            case _ => tile
+        })))
 
     def setTileToRevealed(mutableBoard: mutable.ArrayBuffer[mutable.ArrayBuffer[Tile]], colIndex: Int, rowIndex: Int): Unit = 
         val tile = mutableBoard(rowIndex)(colIndex)

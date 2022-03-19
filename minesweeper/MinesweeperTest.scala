@@ -137,6 +137,45 @@ object MinesweeperTest:
 
         assert(Minesweeper(1, 1, 0, Random(1)) == Minesweeper(Vector(Vector(Tile('0', false)))))
 
+        val visual3 = Vector(
+            Vector(Tile('0', true)),
+            Vector(Tile('0', true)),
+            Vector(Tile('0', true)),
+            Vector(Tile('0', true)),
+            Vector(Tile('0', true)),
+            Vector(Tile('0', true)),
+            Vector(Tile('0', true)),
+            Vector(Tile('0', true)),
+            Vector(Tile('0', true)),
+            Vector(Tile('0', true)),
+            Vector(Tile('0', true)),
+        )
+        val expectedVisual3 = Vector("11| 0", "10| 0", " 9| 0", " 8| 0", " 7| 0", " 6| 0", " 5| 0", " 4| 0", " 3| 0", " 2| 0", " 1| 0", "    _", "    a").mkString("\n")
+        assert(Minesweeper(visual3).visualBoard == expectedVisual3)
+
+        val visual4 = Vector(
+            Vector(Tile('0', true), Tile('0', true)),
+            Vector(Tile('0', true), Tile('0', true)),
+            Vector(Tile('0', true), Tile('0', true)),
+            Vector(Tile('0', true), Tile('0', true)),
+            Vector(Tile('0', true), Tile('0', true)),
+            Vector(Tile('0', true), Tile('0', true)),
+            Vector(Tile('0', true), Tile('0', true)),
+            Vector(Tile('0', true), Tile('0', true)),
+            Vector(Tile('0', true), Tile('0', true)),
+            Vector(Tile('0', true), Tile('0', true)),
+            Vector(Tile('0', true), Tile('0', true)),
+        )
+        val expectedVisual4 = Vector("11| 0 0", "10| 0 0", " 9| 0 0", " 8| 0 0", " 7| 0 0", " 6| 0 0", " 5| 0 0", " 4| 0 0", " 3| 0 0", " 2| 0 0", " 1| 0 0", "    ___", "    a b").mkString("\n")
+        assert(Minesweeper(visual4).visualBoard == expectedVisual4)
+
+        val visual5 = Vector(
+            Vector(Tile('2', true), Tile('b', false)),
+            Vector(Tile('b', false), Tile('2', false))
+        )
+        val expectedVisual5 = Vector("2| 2 b", "1| b *", "   ___", "   a b").mkString("\n")
+        assert(Minesweeper(visual5).action('a', 1).visualBoard == expectedVisual5)
+
         val expectedSetup0 = Minesweeper(Vector(
             Vector(Tile('1', false), Tile('1', false)),
             Vector(Tile('b', false), Tile('2', false)),
