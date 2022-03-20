@@ -5,7 +5,27 @@ package minesweeper
 
 import scala.collection.mutable
 import scala.util.Random
-import scala.io.StdIn.readLine
+
+object MinesweeperGameLoop:
+    def play(opts: MinesweeperOptions, printDep: (Any) => Unit, readLineDep: () => String): Unit = 
+        val random = Random(opts.seed)
+        var myMinesweeper = Minesweeper(opts.height, opts.width, opts.numBombs, random)
+        val printlnDep = (x: Any) => { printDep(x); printDep("\n") }
+        printlnDep(myMinesweeper.visualBoard)
+        while !myMinesweeper.isLost && !myMinesweeper.isVictorious do
+            printDep("What square do you wish to tap? Type column then row, like b 3: ")
+            val square = readLineDep()
+            val col = square.split(" ")(0).toCharArray
+            val row = square.split(" ")(1).toInt
+            myMinesweeper = myMinesweeper.action(col(0), row)
+            if myMinesweeper.isLost then
+                printlnDep("Oops, you lost")
+            if myMinesweeper.isVictorious then
+                printlnDep("Congrats! You won!")
+            printlnDep(myMinesweeper.visualBoard)
+
+    // def isGameNotEnded(myMinesweeper: Minesweeper): Boolean = 
+    //     !myMinesweeper.isLost && !myMinesweeper.isVictorious
 
 
 class Minesweeper(
@@ -127,4 +147,11 @@ end Minesweeper
 case class Tile(
     value: Char,
     revealed: Boolean
+)
+
+case class MinesweeperOptions(
+    height: Int,
+    width: Int,
+    numBombs: Int,
+    seed: Int
 )
